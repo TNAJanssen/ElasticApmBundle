@@ -35,7 +35,7 @@ class ElasticApmExtension extends Extension
         $requestListenerDefinition = $container->getDefinition('elastic_apm.listener.request');
         $exceptionListenerDefinition = $container->getDefinition('elastic_apm.listener.exception');
 
-        if ($transactionConfig = $config['transactions']) {
+        if (array_key_exists('transactions', $config) && $transactionConfig = $config['transactions']) {
             if ($transactionConfig['exclude']) {
                 $requestListenerDefinition->addMethodCall('setExclude', [$transactionConfig['exclude']]);
             }
@@ -49,7 +49,7 @@ class ElasticApmExtension extends Extension
             }
         }
 
-        if ($exceptionConfig = $config['exceptions']) {
+        if (array_key_exists('exceptions', $config) && $exceptionConfig = $config['exceptions']) {
             if ($exceptionConfig['exclude']) {
                 $exceptionListenerDefinition->addMethodCall('setExclude', [$exceptionConfig['exclude']]);
             }
