@@ -17,10 +17,10 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('elastic_apm');
+        $treeBuilder = new TreeBuilder('elastic_apm');
 
-        $rootNode
+        $treeBuilder
+            ->getRootNode()
             ->children()
                 ->booleanNode('enabled')
                     ->defaultTrue()
