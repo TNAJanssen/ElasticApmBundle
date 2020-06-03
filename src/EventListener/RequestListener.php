@@ -8,8 +8,9 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use SpaceSpell\ElasticApmBundle\Agent\AgentAwareInterface;
 use SpaceSpell\ElasticApmBundle\Agent\AgentAwareTrait;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use SpaceSpell\ElasticApmBundle\Support\RequestConverter;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class RequestListener implements LoggerAwareInterface, AgentAwareInterface
 {
@@ -26,7 +27,7 @@ class RequestListener implements LoggerAwareInterface, AgentAwareInterface
         $this->enabled = $enabled;
     }
 
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         if (!$this->enabled || !$event->isMasterRequest()) {
             return;
@@ -45,11 +46,13 @@ class RequestListener implements LoggerAwareInterface, AgentAwareInterface
                         break;
                     }
                 }
-            } else if ($this->exclude) {
-                foreach ($this->exclude as $pattern) {
-                    if (fnmatch($pattern, $name, FNM_NOESCAPE)) {
-                        $match = false;
-                        break;
+            } else {
+                if ($this->exclude) {
+                    foreach ($this->exclude as $pattern) {
+                        if (fnmatch($pattern, $name, FNM_NOESCAPE)) {
+                            $match = false;
+                            break;
+                        }
                     }
                 }
             }

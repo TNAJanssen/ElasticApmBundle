@@ -14,6 +14,7 @@ use SpaceSpell\ElasticApmBundle\ContextProvider\UserContextProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use SpaceSpell\ElasticApmBundle\Support\RequestConverter;
+use Symfony\Component\HttpKernel\Event\TerminateEvent;
 
 class TerminateListener implements LoggerAwareInterface, AgentAwareInterface, UserContextProviderAwareInterface
 {
@@ -26,7 +27,7 @@ class TerminateListener implements LoggerAwareInterface, AgentAwareInterface, Us
         $this->enabled = $enabled;
     }
 
-    public function onKernelTerminate(PostResponseEvent $event)
+    public function onKernelTerminate(TerminateEvent $event)
     {
         if (!$this->enabled || !$event->isMasterRequest()) {
             return;

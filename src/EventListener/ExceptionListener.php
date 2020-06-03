@@ -6,8 +6,8 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use SpaceSpell\ElasticApmBundle\Agent\AgentAwareInterface;
 use SpaceSpell\ElasticApmBundle\Agent\AgentAwareTrait;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ExceptionListener implements LoggerAwareInterface, AgentAwareInterface
 {
@@ -24,7 +24,7 @@ class ExceptionListener implements LoggerAwareInterface, AgentAwareInterface
         $this->enabled = $enabled;
     }
 
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
         if (!$this->enabled) {
             return;
@@ -43,11 +43,13 @@ class ExceptionListener implements LoggerAwareInterface, AgentAwareInterface
                     break;
                 }
             }
-        } else if ($this->exclude) {
-            foreach ($this->exclude as $pattern) {
-                if (fnmatch($pattern, $name, FNM_NOESCAPE)) {
-                    $match = false;
-                    break;
+        } else {
+            if ($this->exclude) {
+                foreach ($this->exclude as $pattern) {
+                    if (fnmatch($pattern, $name, FNM_NOESCAPE)) {
+                        $match = false;
+                        break;
+                    }
                 }
             }
         }
